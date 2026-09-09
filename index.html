@@ -540,7 +540,7 @@
         </div>
         <div class="compare-cell strong">
           <div class="compare-header" style="color: var(--accent-green);">Strong</div>
-          "Show me row count and last refresh time for all tables in DB_MDM.SCH_GIS"
+          "Show me row count and last refresh time for all tables in ANALYTICS_DB.CORE_SCHEMA"
         </div>
       </div>
       <div class="compare-row">
@@ -560,7 +560,7 @@
         </div>
         <div class="compare-cell strong">
           <div class="compare-header" style="color: var(--accent-green);">Strong</div>
-          "Create a DT joining DEVICE_MASTER with SITE_HIERARCHY, refreshing every 30 min"
+          "Create a DT joining FACT_ORDERS with DIM_CUSTOMERS, refreshing every 30 min"
         </div>
       </div>
     </div>
@@ -583,7 +583,7 @@
       </div>
       <div class="tip-item reveal">
         <h3>Offload tedious work</h3>
-        <p>Test cases from PBIs, data comparison before and after reload, bulk ALTER statements, GRANT across roles.</p>
+        <p>Test cases from work items, data comparison before and after reload, bulk ALTER statements, GRANT across roles.</p>
       </div>
       <div class="tip-item reveal">
         <h3>Schedule recurring work</h3>
@@ -618,7 +618,7 @@
       <div class="practice-item reveal">
         <div class="practice-num">4</div>
         <h3>Validate outputs</h3>
-        <p>CoCo is an assistant, not a deployment pipeline. Test in dev/sandbox first. Use your normal ADO PR flow for production.</p>
+        <p>CoCo is an assistant, not a deployment pipeline. Test in dev/sandbox first. Use your normal standard PR flow for production.</p>
       </div>
       <div class="practice-item reveal">
         <div class="practice-num">5</div>
@@ -654,7 +654,7 @@
       <div class="reveal">
         <div class="prompt-step">
           <div class="step-num">1</div>
-          <div class="prompt-box">&gt; Show me the refresh history for dynamic table DB_MDM.SCH_GIS.DT_DEVICE_HIERARCHY</div>
+          <div class="prompt-box">&gt; Show me the refresh history for dynamic table ANALYTICS_DB.CORE_SCHEMA.DT_ORDER_SUMMARY</div>
         </div>
         <div class="prompt-step">
           <div class="step-num">2</div>
@@ -677,11 +677,11 @@
     <!-- UC2 -->
     <div class="usecase-panel" id="uc2">
       <div class="usecase-scenario reveal">
-        <strong>Scenario:</strong> A new PBI describes SP_UPSERT_SITE_DATA. You need structured test cases.
+        <strong>Scenario:</strong> A new work item describes SP_UPSERT_CUSTOMER_DATA. You need structured test cases.
       </div>
       <div class="reveal">
         <div class="prompt-box" style="margin-bottom: 24px; font-size: 14px;">
-          &gt; "Generate ETL test cases for this PBI: As a data engineer, I need a stored procedure SP_UPSERT_SITE_DATA that reads from STG_SITE_FEED, validates site_id is not null, checks for duplicates, and upserts into DIM_SITE on site_id as merge key. It should log row counts to an audit table."
+          &gt; "Generate ETL test cases for this requirement: As a data engineer, I need a stored procedure SP_UPSERT_CUSTOMER_DATA that reads from STG_CUSTOMER_FEED, validates customer_id is not null, checks for duplicates, and upserts into DIM_CUSTOMER on customer_id as merge key. It should log row counts to an audit table."
         </div>
         <p style="color: var(--text-white); font-weight: 600; margin-bottom: 16px; font-size: 17px;">CoCo generates a structured Excel workbook:</p>
         <div class="output-cards">
@@ -691,7 +691,7 @@
           </div>
           <div class="output-card" style="border-color: var(--accent-red);">
             <h4 style="color: var(--accent-red);">Negative Path</h4>
-            <p>Null site_id rejected, duplicates handled</p>
+            <p>Null customer_id rejected, duplicates handled</p>
           </div>
           <div class="output-card" style="border-color: var(--accent-orange);">
             <h4 style="color: var(--accent-orange);">Boundary Tests</h4>
@@ -743,12 +743,12 @@
       </div>
     </div>
     <p class="reveal" style="color: var(--text-muted); font-size: 15px;">
-      Viswajit Nalawade &middot; viswajit.nalawade@lightsourcebp.com &middot; Data Engineering
+      Viswajit Nalawade &middot; vishwajitnalawade777@gmail.com &middot; Data Engineering
     </p>
   </section>
 
   <footer class="footer">
-    Cortex Code Desktop &middot; Snowflake &middot; Lightsource BP Data Engineering
+    Cortex Code Desktop &middot; Snowflake &middot; Data Engineering
   </footer>
 
   <script>
