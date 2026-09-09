@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="snowflake-source" content="cortex-agent-authored" />
+  <title>Cortex Code Desktop — Data Engineering Session</title>
+  <script type="application/json" id="snowflake-report-metadata">
+  {
+    "generated": "2026-09-09",
+    "intent": "Interactive presentation on Cortex Code Desktop for Data Engineering team",
+    "sections": [
+      { "id": "hero", "title": "Hero / Title", "dataSources": [], "producerNotes": "Static content" },
+      { "id": "what-is-coco", "title": "What is CoCo", "dataSources": [], "producerNotes": "Static content" },
+      { "id": "concepts", "title": "Core Concepts", "dataSources": [], "producerNotes": "Static content" },
+      { "id": "best-out", "title": "Getting the Best", "dataSources": [], "producerNotes": "Static content" },
+      { "id": "practices", "title": "Best Practices", "dataSources": [], "producerNotes": "Static content" },
+      { "id": "usecases", "title": "Use Cases", "dataSources": [], "producerNotes": "Static content" }
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --bg-primary: #0f1129;
+      --bg-secondary: #1b1f3b;
+      --bg-card: #242850;
+      --accent-blue: #29b5e8;
+      --accent-teal: #11b8a0;
+      --accent-orange: #ff9f43;
+      --accent-green: #2ecc71;
+      --accent-red: #e74c3c;
+      --text-white: #ffffff;
+      --text-light: #c8cdd5;
+      --text-muted: #8892a4;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color-scheme: dark;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-primary);
+      color: var(--text-light);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* --- SNOWFLAKE SVG LOGO --- */
+    .sf-logo {
+      display: inline-block; vertical-align: middle;
+    }
+    .sf-logo svg {
+      width: 100%; height: 100%;
+    }
+    .sf-logo-nav { width: 28px; height: 28px; margin-right: 8px; }
+    .sf-logo-hero {
+      width: clamp(80px, 12vw, 130px); height: clamp(80px, 12vw, 130px);
+      margin-bottom: 20px;
+      animation: logoSpin 20s linear infinite;
+      filter: drop-shadow(0 0 24px rgba(41,181,232,0.4));
+    }
+    @keyframes logoSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* --- FLOATING SNOWFLAKES --- */
+    .snowflakes-container {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .snowflake-particle {
+      position: absolute; opacity: 0;
+      animation: snowfall linear infinite;
+    }
+    @keyframes snowfall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(calc(100vh + 20px)) rotate(360deg); opacity: 0; }
+    }
+
+    /* --- NAV --- */
+    .nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+      background: rgba(15,17,41,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(41,181,232,0.15);
+      transition: transform 0.3s;
+    }
+    .nav.hidden { transform: translateY(-100%); }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px clamp(16px,4vw,32px);
+    }
+    .nav-logo {
+      font-size: 16px; font-weight: 700; color: var(--text-white);
+      letter-spacing: 0.5px;
+    }
+    .nav-logo span { color: var(--accent-blue); }
+    .nav-links { display: flex; gap: 24px; list-style: none; flex-wrap: wrap; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none; font-size: 14px;
+      transition: color 0.2s; font-weight: 500;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent-blue); }
+    .hamburger {
+      display: none; background: none; border: none; color: var(--text-white);
+      font-size: 24px; cursor: pointer;
+    }
+
+    /* --- HERO --- */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #0f1129 0%, #1a1e45 50%, #0f1129 100%);
+    }
+    .hero-bg-grid {
+      position: absolute; inset: 0; opacity: 0.06;
+      background-image:
+        linear-gradient(rgba(41,181,232,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(41,181,232,0.3) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-glow {
+      position: absolute; width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(41,181,232,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      animation: pulse 6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+    }
+    .hero-content {
+      position: relative; text-align: center;
+      padding: clamp(16px,5vw,40px);
+    }
+    .hero-badge {
+      display: inline-block; padding: 6px 18px; border-radius: 20px;
+      background: rgba(41,181,232,0.12); border: 1px solid rgba(41,181,232,0.3);
+      color: var(--accent-blue); font-size: 13px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 7vw, 72px); font-weight: 800;
+      color: var(--text-white); line-height: 1.1; margin-bottom: 16px;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 22px); color: var(--text-muted);
+      max-width: 600px; margin: 0 auto 32px;
+    }
+    .hero-meta {
+      font-size: 15px; color: var(--text-muted);
+    }
+    .hero-meta strong { color: var(--text-light); }
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      color: var(--text-muted); font-size: 13px; text-align: center;
+      animation: bob 2s ease-in-out infinite;
+    }
+    .scroll-hint .arrow { font-size: 20px; display: block; margin-top: 4px; }
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* --- SECTIONS --- */
+    .section {
+      max-width: 1200px; margin: 0 auto;
+      padding: clamp(60px,10vw,120px) clamp(16px,4vw,32px);
+    }
+    .section-label {
+      display: inline-block; font-size: 12px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--accent-blue); margin-bottom: 12px;
+    }
+    .section h2 {
+      font-size: clamp(28px, 5vw, 44px); font-weight: 700;
+      color: var(--text-white); margin-bottom: 8px; line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 18px; color: var(--text-muted); max-width: 700px; margin-bottom: 48px;
+    }
+
+    /* --- REVEAL ANIMATIONS --- */
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* --- CAPABILITY CARDS --- */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--bg-card); border-radius: 16px;
+      padding: 32px 28px; position: relative; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+    .card-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 20px; font-weight: 700;
+    }
+    .card h3 { color: var(--text-white); font-size: 20px; margin-bottom: 12px; }
+    .card ul { list-style: none; }
+    .card li {
+      padding: 6px 0; font-size: 15px; color: var(--text-light);
+      padding-left: 20px; position: relative;
+    }
+    .card li::before {
+      content: ''; position: absolute; left: 0; top: 14px;
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .card-blue .card-icon { background: rgba(41,181,232,0.15); color: var(--accent-blue); }
+    .card-blue li::before { background: var(--accent-blue); }
+    .card-teal .card-icon { background: rgba(17,184,160,0.15); color: var(--accent-teal); }
+    .card-teal li::before { background: var(--accent-teal); }
+    .card-orange .card-icon { background: rgba(255,159,67,0.15); color: var(--accent-orange); }
+    .card-orange li::before { background: var(--accent-orange); }
+
+    .rbac-note {
+      margin-top: 32px; padding: 16px 24px; border-radius: 12px;
+      background: rgba(41,181,232,0.08); border-left: 3px solid var(--accent-blue);
+      font-size: 15px; color: var(--text-light);
+    }
+
+    /* --- CONCEPTS --- */
+    .concept-list { display: flex; flex-direction: column; gap: 20px; }
+    .concept-item {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 24px; border-radius: 14px;
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: border-color 0.3s;
+    }
+    .concept-item:hover { border-color: rgba(41,181,232,0.2); }
+    .concept-bar {
+      width: 4px; min-height: 60px; border-radius: 4px; flex-shrink: 0;
+    }
+    .concept-item h3 { font-size: 20px; margin-bottom: 6px; }
+    .concept-item p { font-size: 15px; color: var(--text-muted); }
+
+    /* --- PROMPT COMPARISON --- */
+    .compare-table { width: 100%; margin-bottom: 40px; }
+    .compare-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      margin-bottom: 16px;
+    }
+    .compare-cell {
+      padding: 18px 22px; border-radius: 12px; font-size: 15px;
+    }
+    .compare-cell.weak {
+      background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.2);
+      color: #ffaaaa;
+    }
+    .compare-cell.strong {
+      background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.2);
+      color: #aaffaa;
+    }
+    .compare-header {
+      font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    /* --- TIPS --- */
+    .tips-list { display: flex; flex-direction: column; gap: 16px; }
+    .tip-item {
+      padding: 20px 24px; border-radius: 14px;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent-teal);
+    }
+    .tip-item h3 { font-size: 17px; color: var(--accent-teal); margin-bottom: 6px; }
+    .tip-item p { font-size: 15px; color: var(--text-muted); }
+
+    /* --- PRACTICES --- */
+    .practices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .practice-item {
+      padding: 24px; border-radius: 14px;
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .practice-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(41,181,232,0.15); color: var(--accent-blue);
+      font-size: 15px; font-weight: 700; margin-bottom: 12px;
+    }
+    .practice-item h3 { font-size: 17px; color: var(--text-white); margin-bottom: 8px; }
+    .practice-item p { font-size: 14px; color: var(--text-muted); }
+
+    /* --- USE CASES --- */
+    .usecase-tabs {
+      display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 24px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+      background: var(--bg-secondary); color: var(--text-muted);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; font-family: var(--font);
+    }
+    .tab-btn.active {
+      background: rgba(41,181,232,0.15); border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    .usecase-panel { display: none; }
+    .usecase-panel.active { display: block; }
+    .usecase-scenario {
+      padding: 16px 24px; border-radius: 12px; margin-bottom: 28px;
+      background: rgba(255,159,67,0.08); border: 1px solid rgba(255,159,67,0.2);
+      color: var(--accent-orange); font-size: 16px;
+    }
+    .prompt-step {
+      display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px;
+    }
+    .step-num {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(41,181,232,0.12); color: var(--accent-blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+    .prompt-box {
+      flex: 1; padding: 14px 20px; border-radius: 10px;
+      background: var(--bg-card); font-size: 15px; color: var(--text-light);
+      border: 1px solid rgba(255,255,255,0.05);
+      font-family: 'Consolas', 'SF Mono', monospace;
+    }
+    .output-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px; margin-top: 28px;
+    }
+    .output-card {
+      padding: 18px; border-radius: 12px;
+      background: var(--bg-card); border-top: 3px solid;
+    }
+    .output-card h4 { font-size: 15px; margin-bottom: 6px; }
+    .output-card p { font-size: 13px; color: var(--text-muted); }
+    .usecase-takeaway {
+      margin-top: 24px; padding: 14px 20px; border-radius: 10px;
+      background: rgba(17,184,160,0.08); border: 1px solid rgba(17,184,160,0.2);
+      font-size: 14px; color: var(--accent-teal);
+    }
+
+    /* --- CTA / FOOTER --- */
+    .cta-section {
+      text-align: center;
+      padding: clamp(60px,10vw,100px) clamp(16px,4vw,32px);
+      background: linear-gradient(180deg, var(--bg-primary) 0%, #141730 100%);
+    }
+    .cta-section h2 {
+      font-size: clamp(28px,5vw,40px); color: var(--text-white); margin-bottom: 16px;
+    }
+    .cta-section p {
+      font-size: 18px; color: var(--text-muted); max-width: 500px; margin: 0 auto 32px;
+    }
+    .cta-steps {
+      display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .cta-step {
+      text-align: center; max-width: 180px;
+    }
+    .cta-step-num {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(17,184,160,0.15); color: var(--accent-teal);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 700; margin-bottom: 10px;
+    }
+    .cta-step h4 { color: var(--text-white); font-size: 16px; margin-bottom: 4px; }
+    .cta-step p { font-size: 13px; color: var(--text-muted); }
+
+    .footer {
+      text-align: center; padding: 24px;
+      color: var(--text-muted); font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 100%; left: 0; width: 100%;
+        background: rgba(15,17,41,0.95); padding: 16px;
+        border-bottom: 1px solid rgba(41,181,232,0.15);
+      }
+      .hamburger { display: block; }
+      .compare-row { grid-template-columns: 1fr; }
+      .prompt-step { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <div class="nav-logo">Cortex Code <span>Desktop</span></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#what-is-coco">What is CoCo</a></li>
+        <li><a href="#concepts">Concepts</a></li>
+        <li><a href="#best-out">Tips</a></li>
+        <li><a href="#practices">Practices</a></li>
+        <li><a href="#usecases">Use Cases</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Data Engineering Session</div>
+      <h1><span class="gradient">Cortex Code</span><br>Desktop</h1>
+      <p class="hero-sub">Your AI-powered assistant for Snowflake — query data, build pipelines, and manage your account using plain English.</p>
+      <p class="hero-meta">Presented by <strong>Viswajit Nalawade</strong> &middot; Data Engineering</p>
+    </div>
+    <div class="scroll-hint">
+      Scroll to explore
+      <span class="arrow">&#8595;</span>
+    </div>
+  </section>
+
+  <!-- WHAT IS COCO -->
+  <section class="section" id="what-is-coco">
+    <div class="reveal">
+      <span class="section-label">01 &mdash; Overview</span>
+      <h2>What is Cortex Code Desktop?</h2>
+      <p class="section-desc">A desktop application connected directly to your Snowflake account. Ask questions and give instructions in plain English. CoCo writes the SQL, runs it, and shows you the results.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="card card-blue reveal reveal-delay-1">
+        <div class="card-icon">Q</div>
+        <h3>Query and Explore</h3>
+        <ul>
+          <li>Ask data questions in plain English</li>
+          <li>CoCo writes and executes the SQL</li>
+          <li>Inline charts and visualizations</li>
+          <li>Search tables, views, and schemas by description</li>
+        </ul>
+      </div>
+      <div class="card card-teal reveal reveal-delay-2">
+        <div class="card-icon">B</div>
+        <h3>Build and Debug</h3>
+        <ul>
+          <li>Write, fix, and explain SQL or Python</li>
+          <li>Generate Snowpark code</li>
+          <li>Create tables, views, dynamic tables, tasks</li>
+          <li>Debug pipeline failures end to end</li>
+        </ul>
+      </div>
+      <div class="card card-orange reveal reveal-delay-3">
+        <div class="card-icon">M</div>
+        <h3>Manage and Govern</h3>
+        <ul>
+          <li>Manage grants and role assignments</li>
+          <li>Investigate table and column lineage</li>
+          <li>Analyze cost and credit usage</li>
+          <li>Monitor data quality with DMFs</li>
+        </ul>
+      </div>
+    </div>
+    <div class="rbac-note reveal">
+      CoCo respects your existing Snowflake RBAC. It operates under your user and your active role &mdash; no elevated access, no bypassing grants.
+    </div>
+  </section>
+
+  <!-- CORE CONCEPTS -->
+  <section class="section" id="concepts">
+    <div class="reveal">
+      <span class="section-label">02 &mdash; Core Concepts</span>
+      <h2>How CoCo Works</h2>
+      <p class="section-desc">Four building blocks make CoCo useful for your specific work from day one.</p>
+    </div>
+    <div class="concept-list">
+      <div class="concept-item reveal reveal-delay-1">
+        <div class="concept-bar" style="background: var(--accent-blue);"></div>
+        <div>
+          <h3 style="color: var(--accent-blue);">Skills</h3>
+          <p>80+ built-in specialized workflows. Dynamic tables, data quality, cost analysis, governance, alerts, migrations, and more. CoCo loads the right skill automatically based on your question. Teams can also build and share custom skills.</p>
+        </div>
+      </div>
+      <div class="concept-item reveal reveal-delay-2">
+        <div class="concept-bar" style="background: var(--accent-teal);"></div>
+        <div>
+          <h3 style="color: var(--accent-teal);">Sessions</h3>
+          <p>Every conversation is saved automatically. Resume multi-day work, rewind to earlier points, or branch off to try a different approach. Close the app and pick up where you left off tomorrow.</p>
+        </div>
+      </div>
+      <div class="concept-item reveal reveal-delay-3">
+        <div class="concept-bar" style="background: var(--accent-orange);"></div>
+        <div>
+          <h3 style="color: var(--accent-orange);">Memory</h3>
+          <p>CoCo remembers context you tell it to keep &mdash; database names, team conventions, project details. This persists across sessions so you never repeat yourself.</p>
+        </div>
+      </div>
+      <div class="concept-item reveal">
+        <div class="concept-bar" style="background: var(--accent-green);"></div>
+        <div>
+          <h3 style="color: var(--accent-green);">Agents</h3>
+          <p>For complex, multi-step tasks, CoCo launches background agents that work autonomously and report back. You can keep chatting while they work.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GETTING THE BEST OUT OF COCO -->
+  <section class="section" id="best-out">
+    <div class="reveal">
+      <span class="section-label">03 &mdash; Prompt Strategies</span>
+      <h2>Getting the Best Out of CoCo</h2>
+      <p class="section-desc">The quality of your output depends on the quality of your input. Be specific, be contextual.</p>
+    </div>
+
+    <div class="compare-table reveal">
+      <div class="compare-row">
+        <div class="compare-cell weak">
+          <div class="compare-header" style="color: var(--accent-red);">Weak</div>
+          "Show me data"
+        </div>
+        <div class="compare-cell strong">
+          <div class="compare-header" style="color: var(--accent-green);">Strong</div>
+          "Show me row count and last refresh time for all tables in DB_MDM.SCH_GIS"
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell weak">
+          <div class="compare-header" style="color: var(--accent-red);">Weak</div>
+          "Fix this"
+        </div>
+        <div class="compare-cell strong">
+          <div class="compare-header" style="color: var(--accent-green);">Strong</div>
+          "This SP fails with 'invalid identifier' on line 42 &mdash; here's the code: ..."
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-cell weak">
+          <div class="compare-header" style="color: var(--accent-red);">Weak</div>
+          "Create a pipeline"
+        </div>
+        <div class="compare-cell strong">
+          <div class="compare-header" style="color: var(--accent-green);">Strong</div>
+          "Create a DT joining DEVICE_MASTER with SITE_HIERARCHY, refreshing every 30 min"
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3 style="color: var(--text-white); font-size: 22px; margin-bottom: 20px;">Power-User Tips</h3>
+    </div>
+    <div class="tips-list">
+      <div class="tip-item reveal reveal-delay-1">
+        <h3>Invoke skills directly</h3>
+        <p>Ask about "dynamic tables," "data quality," or "cost intelligence" and CoCo loads the specialized workflow automatically.</p>
+      </div>
+      <div class="tip-item reveal reveal-delay-2">
+        <h3>Iterate in the same session</h3>
+        <p>After a query result: "Add a filter for active devices" &rarr; "Chart that by month" &rarr; "Export as a CREATE VIEW."</p>
+      </div>
+      <div class="tip-item reveal reveal-delay-3">
+        <h3>Use CoCo for investigation</h3>
+        <p>"What depends on this table?" (lineage) &middot; "Why is this DT failing?" (diagnostics) &middot; "Who has access?" (governance)</p>
+      </div>
+      <div class="tip-item reveal">
+        <h3>Offload tedious work</h3>
+        <p>Test cases from PBIs, data comparison before and after reload, bulk ALTER statements, GRANT across roles.</p>
+      </div>
+      <div class="tip-item reveal">
+        <h3>Schedule recurring work</h3>
+        <p>Use /automation to schedule CoCo runs as Snowflake tasks &mdash; recurring reports, freshness checks, cost digests.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEST PRACTICES -->
+  <section class="section" id="practices">
+    <div class="reveal">
+      <span class="section-label">04 &mdash; Guidelines</span>
+      <h2>Best Practices</h2>
+      <p class="section-desc">Follow these guidelines for safe, effective use of CoCo across the team.</p>
+    </div>
+    <div class="practices-grid">
+      <div class="practice-item reveal reveal-delay-1">
+        <div class="practice-num">1</div>
+        <h3>Review before executing</h3>
+        <p>Always review generated DDL/DML before confirming, especially on production schemas. Say "just compile, don't execute" when in doubt.</p>
+      </div>
+      <div class="practice-item reveal reveal-delay-2">
+        <div class="practice-num">2</div>
+        <h3>Set your role deliberately</h3>
+        <p>Run USE ROLE at the start of a session if the default role isn't what you need for the task at hand.</p>
+      </div>
+      <div class="practice-item reveal reveal-delay-3">
+        <div class="practice-num">3</div>
+        <h3>Break complex asks into steps</h3>
+        <p>Work incrementally: show schema, then write join, then wrap as DT. Better results than one massive prompt.</p>
+      </div>
+      <div class="practice-item reveal">
+        <div class="practice-num">4</div>
+        <h3>Validate outputs</h3>
+        <p>CoCo is an assistant, not a deployment pipeline. Test in dev/sandbox first. Use your normal ADO PR flow for production.</p>
+      </div>
+      <div class="practice-item reveal">
+        <div class="practice-num">5</div>
+        <h3>Use memory for recurring context</h3>
+        <p>Tell CoCo to remember database names, conventions, and project details so you don't repeat yourself every session.</p>
+      </div>
+      <div class="practice-item reveal">
+        <div class="practice-num">6</div>
+        <h3>Never paste secrets</h3>
+        <p>No connection strings, passwords, or tokens in the chat. Use Snowflake's secret management or environment variables.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="section" id="usecases">
+    <div class="reveal">
+      <span class="section-label">05 &mdash; Live Demos</span>
+      <h2>Use Cases</h2>
+      <p class="section-desc">Real-world examples from our team's daily workflow.</p>
+    </div>
+
+    <div class="usecase-tabs reveal">
+      <button class="tab-btn active" data-tab="uc1">Pipeline Debugging</button>
+      <button class="tab-btn" data-tab="uc2">ETL Test Case Generation</button>
+    </div>
+
+    <!-- UC1 -->
+    <div class="usecase-panel active" id="uc1">
+      <div class="usecase-scenario reveal">
+        <strong>Scenario:</strong> A dynamic table shows UPSTREAM_FAILED and is not refreshing.
+      </div>
+      <div class="reveal">
+        <div class="prompt-step">
+          <div class="step-num">1</div>
+          <div class="prompt-box">&gt; Show me the refresh history for dynamic table DB_MDM.SCH_GIS.DT_DEVICE_HIERARCHY</div>
+        </div>
+        <div class="prompt-step">
+          <div class="step-num">2</div>
+          <div class="prompt-box">&gt; Why did the last refresh fail? Show me the error details.</div>
+        </div>
+        <div class="prompt-step">
+          <div class="step-num">3</div>
+          <div class="prompt-box">&gt; What are the upstream dependencies of this dynamic table?</div>
+        </div>
+        <div class="prompt-step">
+          <div class="step-num">4</div>
+          <div class="prompt-box">&gt; Check if any of the upstream base tables were altered recently</div>
+        </div>
+      </div>
+      <div class="usecase-takeaway reveal">
+        Replaces manually querying multiple INFORMATION_SCHEMA views and tracing upstream objects one by one.
+      </div>
+    </div>
+
+    <!-- UC2 -->
+    <div class="usecase-panel" id="uc2">
+      <div class="usecase-scenario reveal">
+        <strong>Scenario:</strong> A new PBI describes SP_UPSERT_SITE_DATA. You need structured test cases.
+      </div>
+      <div class="reveal">
+        <div class="prompt-box" style="margin-bottom: 24px; font-size: 14px;">
+          &gt; "Generate ETL test cases for this PBI: As a data engineer, I need a stored procedure SP_UPSERT_SITE_DATA that reads from STG_SITE_FEED, validates site_id is not null, checks for duplicates, and upserts into DIM_SITE on site_id as merge key. It should log row counts to an audit table."
+        </div>
+        <p style="color: var(--text-white); font-weight: 600; margin-bottom: 16px; font-size: 17px;">CoCo generates a structured Excel workbook:</p>
+        <div class="output-cards">
+          <div class="output-card" style="border-color: var(--accent-green);">
+            <h4 style="color: var(--accent-green);">Positive Path</h4>
+            <p>Valid data flows through correctly</p>
+          </div>
+          <div class="output-card" style="border-color: var(--accent-red);">
+            <h4 style="color: var(--accent-red);">Negative Path</h4>
+            <p>Null site_id rejected, duplicates handled</p>
+          </div>
+          <div class="output-card" style="border-color: var(--accent-orange);">
+            <h4 style="color: var(--accent-orange);">Boundary Tests</h4>
+            <p>Empty source table, large batch sizes</p>
+          </div>
+          <div class="output-card" style="border-color: var(--accent-blue);">
+            <h4 style="color: var(--accent-blue);">Audit Validation</h4>
+            <p>Row counts logged correctly</p>
+          </div>
+        </div>
+      </div>
+      <div class="usecase-takeaway reveal">
+        This uses a custom skill built by our team. Any team member can create and share skills for repetitive workflows.
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="reveal">
+      <h2>Get Started This Week</h2>
+      <p>Pick one task from your daily workflow and try it in CoCo.</p>
+    </div>
+    <div class="cta-steps reveal">
+      <div class="cta-step">
+        <div class="cta-step-num">1</div>
+        <h4>Install</h4>
+        <p>Download and sign in with your Snowflake credentials</p>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-num">2</div>
+        <h4>Explore</h4>
+        <p>Type "What can I do?" to see available skills</p>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-num">3</div>
+        <h4>Try It</h4>
+        <p>Pick one real task &mdash; investigate, query, or generate</p>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-num">4</div>
+        <h4>Iterate</h4>
+        <p>Work incrementally and let CoCo remember context</p>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-num">5</div>
+        <h4>Share</h4>
+        <p>Built a useful workflow? Create a custom skill</p>
+      </div>
+    </div>
+    <p class="reveal" style="color: var(--text-muted); font-size: 15px;">
+      Viswajit Nalawade &middot; viswajit.nalawade@lightsourcebp.com &middot; Data Engineering
+    </p>
+  </section>
+
+  <footer class="footer">
+    Cortex Code Desktop &middot; Snowflake &middot; Lightsource BP Data Engineering
+  </footer>
+
+  <script>
+    // Snowflake Inc. official logo (geometric icon)
+    // The logo is composed of 6 rounded-rect arms radiating from center,
+    // with small connector bars between adjacent arms, and rounded end caps.
+    var sfSVG = (function() {
+      // Build the Snowflake logo as a set of rects rotated around center
+      var s = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">';
+      s += '<defs><linearGradient id="sfG" x1="0%" y1="0%" x2="100%" y2="100%">';
+      s += '<stop offset="0%" stop-color="#29B5E8"/>';
+      s += '<stop offset="100%" stop-color="#56CCF2"/>';
+      s += '</linearGradient></defs>';
+      s += '<g transform="translate(100,100)">';
+      // 6 main arms: long rounded rects from center outward
+      var angles = [0, 60, 120, 180, 240, 300];
+      for (var i = 0; i < 6; i++) {
+        var a = angles[i];
+        // Main arm
+        s += '<rect x="-7" y="-90" width="14" height="65" rx="7" ry="7" fill="url(#sfG)" transform="rotate(' + a + ')"/>';
+        // End cap circle
+        s += '<circle cx="0" cy="-90" r="10" fill="url(#sfG)" transform="rotate(' + a + ')"/>';
+        // Two small connector nubs angled off the arm tip
+        s += '<rect x="-4" y="-80" width="8" height="22" rx="4" ry="4" fill="url(#sfG)" transform="rotate(' + (a + 30) + ')"/>';
+        s += '<rect x="-4" y="-80" width="8" height="22" rx="4" ry="4" fill="url(#sfG)" transform="rotate(' + (a - 30) + ')"/>';
+      }
+      // Center hub
+      s += '<circle cx="0" cy="0" r="14" fill="url(#sfG)"/>';
+      s += '</g></svg>';
+      return s;
+    })();
+    // Floating snowflake particles (using same logo shape, simplified)
+    (function() {
+      var container = document.createElement('div');
+      container.className = 'snowflakes-container';
+      document.body.appendChild(container);
+      var miniFlake = '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">' +
+        '<g transform="translate(100,100)" opacity="0.6">';
+      var angs = [0,60,120,180,240,300];
+      for (var j = 0; j < 6; j++) {
+        miniFlake += '<rect x="-5" y="-80" width="10" height="55" rx="5" fill="rgba(41,181,232,0.7)" transform="rotate(' + angs[j] + ')"/>';
+        miniFlake += '<circle cx="0" cy="-80" r="7" fill="rgba(41,181,232,0.7)" transform="rotate(' + angs[j] + ')"/>';
+      }
+      miniFlake += '<circle cx="0" cy="0" r="10" fill="rgba(41,181,232,0.7)"/>';
+      miniFlake += '</g></svg>';
+      for (var i = 0; i < 18; i++) {
+        var el = document.createElement('div');
+        el.className = 'snowflake-particle';
+        var size = 10 + Math.random() * 16;
+        el.style.width = size + 'px';
+        el.style.height = size + 'px';
+        el.style.left = (Math.random() * 100) + '%';
+        el.style.animationDuration = (12 + Math.random() * 18) + 's';
+        el.style.animationDelay = (Math.random() * 20) + 's';
+        el.style.opacity = '0';
+        el.innerHTML = miniFlake;
+        container.appendChild(el);
+      }
+    })();
+
+    // Scroll reveal
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(function(el) {
+      observer.observe(el);
+    });
+
+    // Nav hide on scroll
+    var lastScroll = 0;
+    var nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', function() {
+      var current = window.pageYOffset;
+      if (current > lastScroll && current > 80) {
+        nav.classList.add('hidden');
+      } else {
+        nav.classList.remove('hidden');
+      }
+      lastScroll = current;
+
+      // Active link
+      var sections = document.querySelectorAll('.section, .hero');
+      var links = document.querySelectorAll('.nav-links a');
+      sections.forEach(function(sec) {
+        var top = sec.offsetTop - 120;
+        var bottom = top + sec.offsetHeight;
+        if (current >= top && current < bottom) {
+          links.forEach(function(link) { link.classList.remove('active'); });
+          var active = document.querySelector('.nav-links a[href="#' + sec.id + '"]');
+          if (active) active.classList.add('active');
+        }
+      });
+    });
+
+    // Hamburger
+    document.getElementById('hamburger').addEventListener('click', function() {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.usecase-panel').forEach(function(p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        var panel = document.getElementById(btn.getAttribute('data-tab'));
+        panel.classList.add('active');
+        // Force-show all reveals in the newly active panel (IntersectionObserver can't see display:none elements)
+        panel.querySelectorAll('.reveal').forEach(function(el) {
+          el.classList.add('visible');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
